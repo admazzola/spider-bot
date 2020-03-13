@@ -47,12 +47,12 @@ const storeData = (data, path) => {
             quantity = parseInt(quantityString)
           }
 
-          console.log( inventoryData.html() );
 
 
+          let rowData =  {'catalog_number': cat_number, 'stocked':  quantity, 'price': '$'+priceData }
+          console.log(rowData);
+          output.push(rowData)
 
-
-          output.push({'catalog_number': cat_number, 'stocked':  quantity, 'price': '$'+priceData })
           storeData(output,'./app/data/output.json')
         })
         .catch(console.error);
