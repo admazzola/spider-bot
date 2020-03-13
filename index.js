@@ -34,10 +34,25 @@ const storeData = (data, path) => {
         .then(response => {
           const html = response.data;
           const $ = cheerio.load(html);
-          const inventoryData = $('.variant-inventory > .inventory');
+
+          let priceData = $('.product-price').html().toString().split('$')[1];
+          let inventoryData = $('.variant-inventory > .inventory');
+          let quantity = 0;
+
+          if(inventoryData.html() == null){
+            inventoryData = $('.variant-inventory > .no-stock-inventory');
+            quantity = 0;
+          }else{
+            let quantityString = inventoryData.html().toString().split(' ')[0];
+            quantity = parseInt(quantityString)
+          }
+
           console.log( inventoryData.html() );
 
-          output.push({'catalog_number': cat_number, 'quantity':  inventoryData.html() })
+
+
+
+          output.push({'catalog_number': cat_number, 'stocked':  quantity, 'price': '$'+priceData })
           storeData(output,'./app/data/output.json')
         })
         .catch(console.error);
