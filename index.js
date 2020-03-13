@@ -2,6 +2,17 @@
 
 const fs = require('fs')
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: './app/data/output.csv',
+  header: [
+    {id: 'catalog_number', title: 'Catalog Number'},
+    {id: 'stocked', title: 'Stocked'},
+    {id: 'price', title: 'Price'}
+  ]
+});
+
+
 const storeData = (data, path) => {
   try {
     fs.writeFileSync(path, JSON.stringify(data))
@@ -23,6 +34,13 @@ const storeData = (data, path) => {
 
    let output = [];
 
+
+
+
+
+
+async function scrapeData(){
+
    for(var i=0;i<prod_array.length; i++)
    {
       let cat_number = prod_array[i];
@@ -30,7 +48,7 @@ const storeData = (data, path) => {
 
       console.log('url is ',url)
 
-      axios(url)
+       await axios(url)
         .then(response => {
           const html = response.data;
           const $ = cheerio.load(html);
@@ -53,8 +71,21 @@ const storeData = (data, path) => {
           console.log(rowData);
           output.push(rowData)
 
-          storeData(output,'./app/data/output.json')
+
         })
         .catch(console.error);
-
    }
+
+   storeData(output,'./app/data/output.json')
+
+   csvWriter
+   .writeRecords(output)
+   .then(()=> console.log('The CSV file was written successfully'));
+
+
+
+
+}
+
+
+         scrapeData();
