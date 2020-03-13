@@ -1,5 +1,15 @@
 // pl-scraper.js
 
+const fs = require('fs')
+
+const storeData = (data, path) => {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
    const axios = require('axios');
    const cheerio = require('cheerio');
 
@@ -10,9 +20,13 @@
 
    let prod_array = inputdatafile.products_array
 
+
+   let output = [];
+
    for(var i=0;i<prod_array.length; i++)
    {
-      let url = inputdatafile.base_url + prod_array[i];
+      let cat_number = prod_array[i];
+      let url = inputdatafile.base_url + cat_number;
 
       console.log('url is ',url)
 
@@ -20,8 +34,11 @@
         .then(response => {
           const html = response.data;
           const $ = cheerio.load(html);
-          const statsTable = $('.variant-inventory > .inventory');
-          console.log( statsTable.html() );
+          const inventoryData = $('.variant-inventory > .inventory');
+          console.log( inventoryData.html() );
+
+          output.push({'catalog_number': cat_number, 'quantity':  inventoryData.html() })
+          storeData(output,'./app/data/output.json')
         })
         .catch(console.error);
 
